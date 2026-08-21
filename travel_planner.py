@@ -58,7 +58,7 @@ def get_llm_recommendation(date_str, client):
 """
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.6-flash',
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
@@ -133,7 +133,7 @@ def generate_llm_report(date_str, recommendation, restaurants, client):
 
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.6-flash',
             contents=prompt,
             config=types.GenerateContentConfig(
                 system_instruction="You are a helpful travel assistant writing Markdown reports."
