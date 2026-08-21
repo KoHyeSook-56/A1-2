@@ -1,6 +1,6 @@
 # Travel Planner
 
-LLM API(OpenAI)와 지도/장소 검색 API(Kakao Local)를 활용하여 날짜 기반 국내 여행지를 추천하고 맛집 정보를 포함한 여행 리포트를 자동 생성하는 CLI 기반 Python 프로그램입니다.
+LLM API(Google Gemini)와 지도/장소 검색 API(Kakao Local)를 활용하여 날짜 기반 국내 여행지를 추천하고 맛집 정보를 포함한 여행 리포트를 자동 생성하는 CLI 기반 Python 프로그램입니다.
 
 ## 주요 기능
 - **여행지 추천**: 입력한 날짜에 가기 좋은 국내 여행지를 추천합니다 (날씨, 축제 정보 포함).
@@ -21,7 +21,7 @@ pip install -r requirements.txt
 
 프로젝트 루트 디렉토리에 `.env` 파일을 생성하고 다음 내용을 작성하세요:
 ```env
-OPENAI_API_KEY=your_openai_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 KAKAO_REST_API_KEY=your_kakao_rest_api_key_here
 ```
 > [!WARNING]

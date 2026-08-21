@@ -5,11 +5,12 @@ import json
 import requests
 from datetime import datetime
 from dotenv import load_dotenv
-from openai import OpenAI
+from google import genai
+from google.genai import types
 
 load_dotenv()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY")
 
 def parse_arguments():
@@ -33,8 +34,8 @@ def parse_arguments():
 
 def check_api_keys():
     missing_keys = []
-    if not OPENAI_API_KEY:
-        missing_keys.append("OPENAI_API_KEY")
+    if not GEMINI_API_KEY:
+        missing_keys.append("GEMINI_API_KEY")
     if not KAKAO_REST_API_KEY:
         missing_keys.append("KAKAO_REST_API_KEY")
     if missing_keys:
@@ -56,15 +57,15 @@ def get_llm_recommendation(date_str, client):
 }}
 """
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a helpful travel assistant. Always reply with valid JSON."},
-                {"role": "user", "content": prompt}
-            ],
-            response_format={ "type": "json_object" }
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                system_instruction="You are a helpful travel assistant. Always reply with valid JSON."
+            )
         )
-        content = response.choices[0].message.content
+        content = response.text
         return json.loads(content)
     except Exception as e:
         print(f"LLM 1차 추천 오류: {e}")
@@ -131,14 +132,14 @@ def generate_llm_report(date_str, recommendation, restaurants, client):
 """
 
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a helpful travel assistant writing Markdown reports."},
-                {"role": "user", "content": prompt}
-            ]
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction="You are a helpful travel assistant writing Markdown reports."
+            )
         )
-        return response.choices[0].message.content
+        return response.text
     except Exception as e:
         print(f"LLM 2차 리포트 생성 오류: {e}")
         return None
@@ -151,7 +152,7 @@ def main():
     json_path = f"results/{args.date}_data.json"
     md_path = f"results/{args.date}_travel_plan.md"
 
-    client = OpenAI(api_key=OPENAI_API_KEY)
+    client = genai.Client(api_key=GEMINI_API_KEY)
 
     # 1. 1차 추천 및 맛집 검색 (캐싱 적용)
     data = None
